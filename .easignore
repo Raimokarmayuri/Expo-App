@@ -1,0 +1,8 @@
+# Ignore Windows system folders and temp files
+**/AppData/**
+**/Packages/**
+**/*.log
+node_modules/
+npm-debug.log
+.expo/
+.git/
