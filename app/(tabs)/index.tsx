@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
-import { getNotes } from '../../utils/storage';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 import NoteCard from '../../components/NoteCard';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { deleteNote, getNotes } from '../../utils/storage';
 
 export default function Home() {
   const [notes, setNotes] = useState([]);
@@ -19,14 +19,25 @@ useFocusEffect(
   }, [])
 );
 
+const handleDelete = async (id: string) => {
+  await deleteNote(id);               // 🗑️ Delete from storage
+  const updated = await getNotes();   // 🔁 Reload updated list
+  setNotes(updated);                  // 📦 Update local state
+};
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>📒 My Notes</Text>
-      <FlatList
-        data={notes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <NoteCard note={item} />}
-      />
+     <FlatList
+  data={notes}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <NoteCard
+      note={item}
+      onDelete={() => handleDelete(item.id)} // ✅ No alert, no notification
+    />
+  )}
+/>
       <Button title="Add Note" onPress={() => router.push('/add')} />
     </View>
   );
